@@ -2,19 +2,48 @@
 //
 
 #include <iostream>
+#include <thread>
+#include <Windows.h>
+#include <chrono>
+#include<mutex>
+#include<atomic>
+
+
+
+thread_local int n;
+void Client()
+{
+	n = 0;
+	for (int i = 0; i < 10; i++)
+	{
+		std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+		std::cout << "Клиент  " << n++ << " ";
+		std::cout << std::endl;
+	}
+	std::cout << std::endl;
+}
+
+void Operator()
+{
+	n = 10;
+	for (int i = 0; i < 10; i++)
+	{
+		std::this_thread::sleep_for(std::chrono::milliseconds(2000));
+		std::cout << "Оператор " << n-- << " ";
+		std::cout << std::endl;
+	}
+	std::cout << std::endl;
+}
 
 int main()
 {
-    std::cout << "Hello World!\n";
+	std::cout << std::thread::hardware_concurrency() << std::endl;
+	setlocale(LC_ALL, "Russian");
+	//int n = 10;
+	std::thread t1(Client);
+	std::thread t2(Operator);
+	t1.join();
+	t2.join();
+
+	return 0;
 }
-
-// Запуск программы: CTRL+F5 или меню "Отладка" > "Запуск без отладки"
-// Отладка программы: F5 или меню "Отладка" > "Запустить отладку"
-
-// Советы по началу работы 
-//   1. В окне обозревателя решений можно добавлять файлы и управлять ими.
-//   2. В окне Team Explorer можно подключиться к системе управления версиями.
-//   3. В окне "Выходные данные" можно просматривать выходные данные сборки и другие сообщения.
-//   4. В окне "Список ошибок" можно просматривать ошибки.
-//   5. Последовательно выберите пункты меню "Проект" > "Добавить новый элемент", чтобы создать файлы кода, или "Проект" > "Добавить существующий элемент", чтобы добавить в проект существующие файлы кода.
-//   6. Чтобы снова открыть этот проект позже, выберите пункты меню "Файл" > "Открыть" > "Проект" и выберите SLN-файл.
